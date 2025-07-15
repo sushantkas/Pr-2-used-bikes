@@ -7,6 +7,8 @@ import warnings
 import re
 warnings.filterwarnings("ignore")
 
+
+
 class BikePreprocess:
     def __init__(self, df: pd.DataFrame):
         self.df = df.copy()
@@ -102,6 +104,13 @@ class BikePreprocess:
         #self.df["owner"] = pd.to_numeric(self.df["owner"], errors='coerce')
         self.df["owner"].fillna(1, inplace=True)
         return self.df
+    
+    def location_clean(self):
+        self.df["location"].str.title()
+        self.df["location"].str.strip()
+        self.df["location"].fillna("Not Disclosed", inplace=True)
+        return self.df
+
 
 
 # Processing functions for the dataset
@@ -130,6 +139,10 @@ class BikePreprocess:
             self.textformat()
         except Exception as e:
             print(f"Error in textformat: {e}")
+        try:
+            self.location_clean()
+        except Exception as e:
+            print(f"Error in location_clean: {e}")
         return self.df
 
     

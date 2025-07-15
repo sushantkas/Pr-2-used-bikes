@@ -8,7 +8,7 @@ __pycache__/
 # Virtual environment
 venv/
 pr2/
-
+bikes_EDA_Cleaned.csv
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
