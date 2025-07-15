@@ -146,3 +146,24 @@ class BikePreprocess:
         return self.df
 
     
+
+
+class ML_scale_tranfsormed:
+    def __init__(self, df: pd.DataFrame):
+        self.df = df.copy()
+    
+        self.categorical_cols = ['model_name',"model_year", 'location', 'brand']
+        self.numerical_cols_x= ["kms_driven", "mileage", "power", "cc"]
+        self.y_col = "price"
+
+
+    def scaler_tranformer_load(self):
+        with open("categorical_scaler.pkl", "rb") as f:
+            categorical_scaler = joblib.load(f)
+        with open("x_num.pkl", "rb") as f:
+            num_scaler = joblib.load(f)
+        with open("y_num.pkl", "rb") as f:
+            y_scaler = joblib.load(f)
+        return categorical_scaler, num_scaler, y_scaler
+    
+    def tranform_data(self):
