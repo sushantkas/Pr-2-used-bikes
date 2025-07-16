@@ -5,6 +5,7 @@ import joblib
 import seaborn as sns
 import warnings
 import re
+from sklearn.preprocessing import RobustScaler, LabelEncoder
 warnings.filterwarnings("ignore")
 
 
@@ -158,7 +159,7 @@ class ML_scale_tranfsormed:
 
 
     def scaler_tranformer_load(self):
-        with open("categorical_scaler.pkl", "rb") as f:
+        with open("categorical_encoders.pkl", "rb") as f:
             categorical_scaler = joblib.load(f)
         with open("x_num.pkl", "rb") as f:
             num_scaler = joblib.load(f)
@@ -166,4 +167,29 @@ class ML_scale_tranfsormed:
             y_scaler = joblib.load(f)
         return categorical_scaler, num_scaler, y_scaler
     
-    def tranform_data(self):
+    def transform_data_x(self):
+        new_df=pd.DataFrame()
+        # loading all the scalers
+        categorical_scaler, num_scaler, _ = self.scaler_tranformer_load()
+        for i in self.categorical_cols:
+            new_df[i] = categorical_scaler[i].transform(self.df[i])
+        new_df[self.numerical_cols_x] = num_scaler.transform(self.df[self.numerical_cols_x])
+
+        return new_df
+    
+
+
+    def inverse_transform_data_y(self):
+        # Load only the y scaler
+        _, _, self.y_scaler = self.scaler_tranformer_load()
+        
+        # Transform y and flatten to 1D
+        transformed_y = self.y_scaler.inverse_transform(
+            self.df[self.y_col].values.reshape(-1, 1)
+        ).ravel()
+        original_price = np.expm1(transformed_y)
+
+        
+        # Assign into a new DataFrame
+        new_df = pd.DataFrame({self.y_col: original_price})
+        return new_df
