@@ -9,7 +9,7 @@ __pycache__/
 venv/
 pr2/
 bikes_EDA_Cleaned.csv
-
+catboost_info/
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints
 
