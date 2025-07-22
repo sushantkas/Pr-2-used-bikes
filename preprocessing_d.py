@@ -153,7 +153,7 @@ class ML_scale_tranfsormed:
     def __init__(self, df: pd.DataFrame):
         self.df = df.copy()
     
-        self.categorical_cols = ['model_name',"model_year", 'location', 'brand']
+        self.categorical_cols = ['model_name', 'location', 'brand']
         self.numerical_cols_x= ["kms_driven", "mileage", "power", "cc"]
         self.y_col = "price"
 
@@ -174,7 +174,7 @@ class ML_scale_tranfsormed:
         for i in self.categorical_cols:
             new_df[i] = categorical_scaler[i].transform(self.df[i])
         new_df[self.numerical_cols_x] = num_scaler.transform(self.df[self.numerical_cols_x])
-
+        new_df[["model_year","owner"]] = self.df[["model_year","owner"]]
         return new_df
     
 
