@@ -5,6 +5,7 @@ import joblib
 import seaborn as sns
 import warnings
 import re
+import pickle
 from sklearn.preprocessing import RobustScaler, LabelEncoder
 warnings.filterwarnings("ignore")
 
@@ -193,3 +194,12 @@ class ML_scale_tranfsormed:
         # Assign into a new DataFrame
         new_df = pd.DataFrame({self.y_col: original_price})
         return new_df
+    
+
+    def transform_data_freq(self):
+        with open("categorical_encoders_freq.pkl", "rb") as f:
+            freq = pickle.load(f)
+            for i in self.categorical_cols:
+                self.df[i]=self.df[i].map(freq[i])
+
+        return self.df
