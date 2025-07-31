@@ -14,6 +14,7 @@ warnings.filterwarnings("ignore")
 class BikePreprocess:
     def __init__(self, df: pd.DataFrame):
         self.df = df.copy()
+        self.df.drop(self.df[self.df["price"]==0].index, inplace=True)
     
     def bike_preprocess_mileage(self):
         self.df["mileage"]= self.df["mileage"].str.strip()
