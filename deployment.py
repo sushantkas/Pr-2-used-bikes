@@ -10,6 +10,6 @@ import seaborn as sns
 
 
 
-st.title('Deployment of ML Model')
+st.header('Welcome to Bike price predictor')
 
-st.write("This is a sample model deployment app")
+st.subheader("Bike Price will be Estimated Based on several Factors")

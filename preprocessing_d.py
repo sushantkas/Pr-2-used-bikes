@@ -6,8 +6,8 @@ import seaborn as sns
 import warnings
 import re
 import pickle
-from sklearn.preprocessing import RobustScaler, LabelEncoder
 warnings.filterwarnings("ignore")
+from hdbscan import approximate_predict , HDBSCAN
 
 
 
@@ -204,3 +204,40 @@ class ML_scale_tranfsormed:
                 self.df[i]=self.df[i].map(freq[i])
 
         return self.df
+
+
+
+
+class pipelines_ml:
+    def __init__(self, df: pd.DataFrame):
+        self.df = df.copy()
+        def open_files(path):
+            with open(path, "rb") as f:
+                return pickle.load(f)
+
+        self.cluster = open_files("saved_models/Cluster_predictor.pkl")
+        self.model_outlier = open_files("saved_models/Catboost_model_outlier.pkl")
+        self.model = open_files("saved_models/Catboost_model.pkl")
+        self.df_trans = ML_scale_tranfsormed(self.df).transform_data_freq()
+        if "Unnamed: 0" in self.df_trans.columns:
+            self.df_trans.drop("Unnamed: 0", axis=1, inplace=True)
+        #self.categorical_cols = ['model_name', 'location', 'brand']
+        #self.numerical_cols_x = ["kms_driven", "mileage", "power", "cc"]
+        self.df_trans["Cluster"]=self.cluster.predict(self.df_trans)
+        self.final_cluster = self.df_trans[self.df_trans["Cluster"]!=-1][self.df_trans.columns]
+        self.final_cluster_outlier = self.df_trans[self.df_trans["Cluster"]==-1][self.df_trans.columns]
+
+    def predict(self):
+        if self.final_cluster_outlier.shape[0]==0:
+            self.final_cluster["price"] = np.expm1(self.model.predict(self.final_cluster))
+            return self.final_cluster
+        else:
+            #np.expm1(y_bi)
+            self.final_cluster["price"] = np.expm1(self.model.predict(self.final_cluster))
+            self.final_cluster_outlier["price"] = np.expm1(self.model_outlier.predict(self.final_cluster_outlier))
+            self.final_output_x = pd.concat([self.final_cluster, self.final_cluster_outlier], axis=0)
+            self.df["price"] = self.final_output_x["price"]
+            if "Unnamed: 0" in self.df.columns:
+                self.df.drop("Unnamed: 0", axis=1, inplace=True)
+            self.final_output = self.df
+            return self.final_output
